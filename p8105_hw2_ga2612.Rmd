@@ -1,0 +1,22 @@
+---
+title: "Homework 2"
+author: "Lupe Antonio"
+date: "10/2/2023"
+output: pdf_document
+---
+
+```{r setup, include=FALSE, message=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+```
+
+
+## Problem 1
+
+First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
+
+```{r}
+#loading pols-month data
+pols_month <- read_csv("data_hw2/fivethirtyeight_datasets/pols-month.csv")
+```
+
