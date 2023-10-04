@@ -13,9 +13,11 @@ library(tidyverse)
 
 ## Problem 1
 
-First, clean the data in pols-month.csv. Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
+First, clean the data in pols-month.csv. 
 
-```{r}
+Use separate() to break up the variable mon into integer variables year, month, and day; replace month number with month name; create a president variable taking values gop and dem, and remove prez_dem and prez_gop; and remove the day variable.
+
+```{r, message=FALSE}
 #loading pols-month data
 pols_month <- read_csv("data_hw2/fivethirtyeight_datasets/pols-month.csv")
 ```
@@ -23,8 +25,33 @@ pols_month <- read_csv("data_hw2/fivethirtyeight_datasets/pols-month.csv")
 
 ```{r}
 #cleaning the data
-
-pols_month <- clean_na
+pols_month <- janitor::clean_names(pols_month) %>%
+  #breaking up variable mon into integer variables: year, month, & day
+  separate(mon, into = c("year", "month", "day"), convert = TRUE) %>%
+  mutate(
+    #replacing month num with month name
+    month = case_match(
+      month,
+      1 ~ "january",
+      2 ~ "february",
+      3 ~ "march", 
+      4 ~ "april",
+      5 ~ "may",
+      6 ~ "june",
+      7 ~ "july",
+      8 ~ "august",
+      9 ~ "september",
+      10 ~ "october",
+      11 ~ "november",
+      12 ~ "december"),
+    #creating president variable
+    president = case_when(
+      prez_dem == 1 & prez_gop == 0 ~ "democratic",
+      prez_dem == 0 & prez_gop == 1 ~ "republican")) %>%
+  #removing prez_dem, prez_gop, and day variables
+  select(-prez_dem, -prez_gop, -day)
 ```
+
+
 
 
