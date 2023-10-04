@@ -51,7 +51,7 @@ pols_month <- janitor::clean_names(pols_month) %>%
 
 ```{r, message=FALSE}
 #loading snp.csv data
-snp <- read_csv("data_hw2/fivethirtyeight_datasets/snp.csv")%>%
+snp <- read_csv("data_hw2/fivethirtyeight_datasets/snp.csv") %>%
   #cleaning data
   janitor::clean_names() %>%
   #fixing the dates
@@ -79,4 +79,34 @@ snp <- read_csv("data_hw2/fivethirtyeight_datasets/snp.csv")%>%
 ```
 
 
+```{r, message=FALSE}
+#loading unemployment.csv data
+unemployment <- read_csv("data_hw2/fivethirtyeight_datasets/unemployment.csv") %>%
+  #cleaning the data
+  janitor::clean_names() %>%
+  #going from "wide" to "long" format
+  pivot_longer(jan:dec,
+               names_to = "month",
+               values_to = "unemp_perctg") %>%
+  #fixing month names
+  mutate(
+    month = case_match(
+      month,
+      "jan" ~ "january",
+      "feb" ~ "february",
+      "mar" ~ "march",
+      "apr" ~ "april",
+      "may" ~ "may",
+      "jun" ~ "june",
+      "jul" ~ "july",
+      "aug" ~ "august",
+      "sep" ~ "september",
+      "oct" ~ "october",
+      "nov" ~ "november",
+      "dec" ~ "december"
+    ))
+```
 
+Join the datasets by merging snp into pols, and merging unemployment into the result.
+
+Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
