@@ -20,3 +20,11 @@ First, clean the data in pols-month.csv. Use separate() to break up the variable
 pols_month <- read_csv("data_hw2/fivethirtyeight_datasets/pols-month.csv")
 ```
 
+
+```{r}
+#cleaning the data
+
+pols_month <- clean_na
+```
+
+
