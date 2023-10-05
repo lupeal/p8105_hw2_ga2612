@@ -185,8 +185,8 @@ trash_wheels_tidy <- bind_rows(mr_trash_wheel, professor_trash_wheel, gwynnda_tr
 
 The final tidy dataset contains information from `mr_trash_wheel`, `professor_trash_wheel`, and `gwynnda_trash_wheel`. It has a total of `r nrow(trash_wheels_tidy)` observations and `r ncol(trash_wheels_tidy)` variables. This dataset contains information regarding the amount of trash per different trash type between `r trash_wheels_tidy %>% pull(year) %>% min()` and `r trash_wheels_tidy %>% pull(year) %>% max()` for each type of trash wheel. 
 
-From the available data, the total weight (in tons) of trash collected by Professor Trash Wheel was `r professor_trash_wheel %>% sum(weight_tons)`. The total weight (in tons) of trash collected by Mr. Trash Wheel was `r mr_trash_wheel %>% sum(weight_tons)`. Simiarly, the total weight (in tons) of trash collected by Gwynnda Trash Wheel was `r gwynnda_trash_wheel %>% sum(weight_tons)`.
-Additionally, the total number of cigarette butts collected by Gwynnda in July of 2021 was `r gwynnda_trash_wheel %>% filter(month == "July" & year == "2021") %>% sum(cigarette_butts)`.  
+From the available data, the total weight (in tons) of trash collected by Professor Trash Wheel was `r professor_trash_wheel %>% pull(weight_tons) %>% sum()`. The total weight (in tons) of trash collected by Mr. Trash Wheel was `r mr_trash_wheel %>% pull(weight_tons) %>% sum()`. Simiarly, the total weight (in tons) of trash collected by Gwynnda Trash Wheel was `r gwynnda_trash_wheel %>% pull(weight_tons) %>% sum()`.
+Additionally, the total number of cigarette butts collected by Gwynnda in July of 2021 was `r gwynnda_trash_wheel %>% filter(month == "July" & year == "2021") %>% pull(cigarette_butts) %>% sum()`.  
 
 
 
@@ -230,13 +230,13 @@ baseline_demos <- baseline_demos%>%
 
 
 The `baseline_demos` dataset was imported and tidyied up by renaming column names when necessary, mutating the `sex` variable values into female or male, and similarly the `apoe4_carrier` into carrier or non-carrier. Additionally, NA's were needed to `onset_age` variable, and we filtered for participants without MCI at baseline. 
-The resulting dataset contains a total of `r nrow(baseline_demos)` observations and `r ncol(baseline_demos)` variables. There was a total of 483 participants recruited and of those `r nrow(baseline_demos)` developed MCI. The average baseline age was `r baseline_demos %>% mean(baseline_age)`. The proportion of women in the study that were APOE4 carriers were `r baseline_demos %>% filter(sex == 'female' & apoe4_carrier == "carrier") %>% sum(id)` / `r nrow(baseline_demos)`.  
+The resulting dataset contains a total of `r nrow(baseline_demos)` observations and `r ncol(baseline_demos)` variables. There was a total of 483 participants recruited and of those `r nrow(baseline_demos)` developed MCI. The average baseline age was `r baseline_demos %>% pull(baseline_age) %>% mean()`. The proportion of women in the study that were APOE4 carriers were `r baseline_demos %>% filter(sex == 'female' & apoe4_carrier == "carrier") %>% pull(id) %>% sum()` / `r nrow(baseline_demos)`.  
 
 
 
 
 
-```{r, message=FAlSE}
+```{r, message FALSE}
 #loading other datasets
 amyloid_dataset <- read_csv("data_hw2/data_mci/mci_amyloid.csv", skip = 1) %>%
   #cleaning dataset
