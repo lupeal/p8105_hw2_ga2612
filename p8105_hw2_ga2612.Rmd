@@ -128,7 +128,6 @@ Additionally, the `unemployment` dataset has a total of `r nrow(unemployment)` o
 
 
 
-
 ## Problem 2
 
 ```{r, message=FALSE}
@@ -184,8 +183,11 @@ trash_wheels_tidy <- bind_rows(mr_trash_wheel, professor_trash_wheel, gwynnda_tr
 ```
 
 
-Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of cigarette butts collected by Gwynnda in July of 2021?
 
+The final tidy dataset contains information from `mr_trash_wheel`, `professor_trash_wheel`, and `gwynnda_trash_wheel`. It has a total of `r nrow(trash_wheels_tidy)` observations and `r ncol(trash_wheels_tidy)` variables. This dataset contains information regarding the amount of trash per different trash type between `r trash_wheels_tidy %>% pull(year) %>% min()` and `r trash_wheels_tidy %>% pull(year) %>% max()` for each type of trash wheel. 
+
+From the available data, the total weight (in tons) of trash collected by Professor Trash Wheel was `r professor_trash_wheel %>% sum(weight_tons)`. The total weight (in tons) of trash collected by Mr. Trash Wheel was `r mr_trash_wheel %>% sum(weight_tons)`. Simiarly, the total weight (in tons) of trash collected by Gwynnda Trash Wheel was `r gwynnda_trash_wheel %>% sum(weight_tons)`.
+Additionally, the total number of cigarette butts collected by Gwynnda in July of 2021 was `r gwynnda_trash_wheel %>% filter(month == "July" & year == "2021") %>% sum(cigarette_butts)`.  
 
 
 
