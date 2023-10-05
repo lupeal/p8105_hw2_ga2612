@@ -10,6 +10,7 @@ knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
 library(readxl)
+library(dplyr)
 ```
 
 
@@ -140,9 +141,13 @@ mr_trash_wheel <- read_excel("data_hw2/Trash_Wheel_Collection_Data.xlsx", sheet 
   select(-x15, -x16) %>%
   #creating new homes_powered variable
   mutate(
-    homes_powered_2 = (weight_tons * 500)/30) %>%
+    homes_powered = (weight_tons * 500)/30) %>%
   #adding trash wheel variable
-  mutate(trash_wheel = "Mr. Trash Wheel")
+  mutate(trash_wheel = "Mr. Trash Wheel") %>%
+  #filter NA's in dumpster
+  filter(!is.na(dumpster)) %>%
+  #making year numeric
+  mutate(year = as.numeric(year))
 ```
 
 
@@ -152,7 +157,11 @@ professor_trash_wheel <- read_excel("data_hw2/Trash_Wheel_Collection_Data.xlsx",
   #cleaning data
   janitor::clean_names() %>%
   #adding trash wheel variable
-  mutate(trash_wheel = "Professor Trash Wheel")
+  mutate(trash_wheel = "Professor Trash Wheel") %>%
+  #filter NA's in dumpster
+  filter(!is.na(dumpster)) %>%
+  #making year numeric
+  mutate(year = as.numeric(year))
 ```
 
 
@@ -162,6 +171,79 @@ gwynnda_trash_wheel <- read_excel("data_hw2/Trash_Wheel_Collection_Data.xlsx", s
   #cleaning data
   janitor::clean_names() %>%
   #adding trash wheel variable
-  mutate(trash_wheel = "Gwynnda Trash Wheel")
+  mutate(trash_wheel = "Gwynnda Trash Wheel") %>%
+  #filter NA's in dumpster
+  filter(!is.na(dumpster)) %>%
+  #making year numeric
+  mutate(year = as.numeric(year))
 ```
+
+
+```{r}
+#combining datasets
+trash_wheels_tidy <- bind_rows(mr_trash_wheel, professor_trash_wheel, gwynnda_trash_wheel)
+```
+
+
+Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of cigarette butts collected by Gwynnda in July of 2021?
+
+
+
+
+## Problem 3
+
+Import, clean, and tidy the dataset of baseline demographics. Ensure that sex and APOE4 carrier status are appropriate encoded (i.e. not numeric), and remove any participants who do not meet the stated inclusion criteria (i.e. no MCI at baseline). Discuss important steps in the import process and relevant features of the dataset. How many participants were recruited, and of these how many develop MCI? What is the average baseline age? What proportion of women in the study are APOE4 carriers?
+
+Similarly, import, clean, and tidy the dataset of longitudinally observed biomarker values; comment on the steps on the import process and the features of the dataset.
+
+Check whether some participants appear in only the baseline or amyloid datasets, and comment on your findings. Combine the demographic and biomarker datasets so that only participants who appear in both datasets are retained, and briefly describe the resulting dataset; export the result as a CSV to your data directory.
+
+
+```{r, message=FALSE}
+#loading the baseline dataset
+baseline_demos <- read_csv("data_hw2/data_mci/MCI_baseline.csv", skip = 1) %>%
+  #cleaning dataset
+  janitor::clean_names() %>%
+  #renaming the column names
+  rename(
+    'id' = 'x1',
+    'baseline_age' = 'age_at_the_study_baseline',
+    'sex' = 'x1_male_0_female',
+    'education_years' = 'years_of_education',
+    'apoe4_carrier' = 'x1_apoe4_carrier_0_apoe4_non_carrier',
+    'onset_age' = 'age_at_the_onset_of_mci_missing_if_a_subject_remains_mci_free_during_the_follow_up_period')
+```
+
+
+```{r, message=FALSE}
+#continuation of tidying data
+baseline_demos <- baseline_demos %>%
+  mutate(
+    #changing sex values
+    sex = case_when(
+      sex == 0 ~ "female",
+      sex == 1 ~ "male"),
+    #changing APOE4 carrier values
+    apoe4_carrier = case_when(
+      apoe4_carrier == 0 ~ "non-carrier",
+      apoe4_carrier == 1 ~ "carrier"),
+    #adding NA's in blank spaces
+    onset_age = case_when(
+      onset_age == "." ~ NA,
+      TRUE ~ as.numeric(onset_age)
+    )) %>%
+  #filtering no MCI
+  filter(onset_age > baseline_age | is.na(onset_age))
+```
+
+
+
+```{r, message=FAlSE}
+#loading other datasets
+amyloid_dataset <- read_csv("data_hw2/data_mci/mci_amyloid.csv", skip = 1) %>%
+  #cleaning dataset
+  janitor::clean_names() %>%
+  
+```
+
 
