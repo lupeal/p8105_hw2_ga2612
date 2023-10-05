@@ -140,7 +140,9 @@ mr_trash_wheel <- read_excel("data_hw2/Trash_Wheel_Collection_Data.xlsx", sheet 
   select(-x15, -x16) %>%
   #creating new homes_powered variable
   mutate(
-    homes_powered_2 = (weight_tons * 500)/30)
+    homes_powered_2 = (weight_tons * 500)/30) %>%
+  #adding trash wheel variable
+  mutate(trash_wheel = "Mr. Trash Wheel")
 ```
 
 
@@ -148,7 +150,9 @@ mr_trash_wheel <- read_excel("data_hw2/Trash_Wheel_Collection_Data.xlsx", sheet 
 #loading Professor Trash Wheel data
 professor_trash_wheel <- read_excel("data_hw2/Trash_Wheel_Collection_Data.xlsx", sheet = "Professor Trash Wheel") %>%
   #cleaning data
-  janitor::clean_names()
+  janitor::clean_names() %>%
+  #adding trash wheel variable
+  mutate(trash_wheel = "Professor Trash Wheel")
 ```
 
 
@@ -156,6 +160,8 @@ professor_trash_wheel <- read_excel("data_hw2/Trash_Wheel_Collection_Data.xlsx",
 #loading Gwynnda data
 gwynnda_trash_wheel <- read_excel("data_hw2/Trash_Wheel_Collection_Data.xlsx", sheet = "Gwynnda Trash Wheel") %>%
   #cleaning data
-  janitor::clean_names()
+  janitor::clean_names() %>%
+  #adding trash wheel variable
+  mutate(trash_wheel = "Gwynnda Trash Wheel")
 ```
 
