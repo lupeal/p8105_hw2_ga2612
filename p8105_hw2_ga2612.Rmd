@@ -9,6 +9,7 @@ output: pdf_document
 knitr::opts_chunk$set(echo = TRUE)
 library(tidyverse)
 library(lubridate)
+library(readxl)
 ```
 
 
@@ -107,6 +108,54 @@ unemployment <- read_csv("data_hw2/fivethirtyeight_datasets/unemployment.csv") %
     ))
 ```
 
-Join the datasets by merging snp into pols, and merging unemployment into the result.
+
+```{r}
+#merging snp into pols
+final_data <- left_join(pols_month, snp, by = c("year", "month"))
+
+final_data <- left_join(final_data, unemployment, by = c("year", "month"))
+```
 
 Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+
+
+
+
+
+
+## Problem 2
+
+
+Use a similar process to import, clean, and organize the data for Professor Trash Wheel and Gwynnda, and combine these with the Mr. Trash Wheel dataset to produce a single tidy dataset. To keep track of which Trash Wheel is which, you may need to add an additional variable to all datasets before combining.
+
+Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of cigarette butts collected by Gwynnda in July of 2021?
+
+
+```{r, message=FALSE}
+#loading Mr. Trash Wheel data
+mr_trash_wheel <- read_excel("data_hw2/Trash_Wheel_Collection_Data.xlsx", sheet = "Mr. Trash Wheel") %>%
+  #cleaning data
+  janitor::clean_names() %>%
+  #removing x15 & x16 columns
+  select(-x15, -x16) %>%
+  #creating new homes_powered variable
+  mutate(
+    homes_powered_2 = (weight_tons * 500)/30)
+```
+
+
+```{r}
+#loading Professor Trash Wheel data
+professor_trash_wheel <- read_excel("data_hw2/Trash_Wheel_Collection_Data.xlsx", sheet = "Professor Trash Wheel") %>%
+  #cleaning data
+  janitor::clean_names()
+```
+
+
+```{r}
+#loading Gwynnda data
+gwynnda_trash_wheel <- read_excel("data_hw2/Trash_Wheel_Collection_Data.xlsx", sheet = "Gwynnda Trash Wheel") %>%
+  #cleaning data
+  janitor::clean_names()
+```
+
