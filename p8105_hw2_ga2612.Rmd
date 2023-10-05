@@ -183,7 +183,6 @@ trash_wheels_tidy <- bind_rows(mr_trash_wheel, professor_trash_wheel, gwynnda_tr
 ```
 
 
-
 The final tidy dataset contains information from `mr_trash_wheel`, `professor_trash_wheel`, and `gwynnda_trash_wheel`. It has a total of `r nrow(trash_wheels_tidy)` observations and `r ncol(trash_wheels_tidy)` variables. This dataset contains information regarding the amount of trash per different trash type between `r trash_wheels_tidy %>% pull(year) %>% min()` and `r trash_wheels_tidy %>% pull(year) %>% max()` for each type of trash wheel. 
 
 From the available data, the total weight (in tons) of trash collected by Professor Trash Wheel was `r professor_trash_wheel %>% sum(weight_tons)`. The total weight (in tons) of trash collected by Mr. Trash Wheel was `r mr_trash_wheel %>% sum(weight_tons)`. Simiarly, the total weight (in tons) of trash collected by Gwynnda Trash Wheel was `r gwynnda_trash_wheel %>% sum(weight_tons)`.
@@ -210,7 +209,7 @@ baseline_demos <- read_csv("data_hw2/data_mci/MCI_baseline.csv", skip = 1) %>%
 
 ```{r, message=FALSE}
 #continuation of tidying data
-baseline_demos <- baseline_demos %>%
+baseline_demos <- baseline_demos%>%
   mutate(
     #changing sex values
     sex = case_when(
@@ -228,7 +227,10 @@ baseline_demos <- baseline_demos %>%
   #filtering no MCI
   filter(onset_age > baseline_age | is.na(onset_age))
 ```
-Discuss important steps in the import process and relevant features of the dataset. How many participants were recruited, and of these how many develop MCI? What is the average baseline age? What proportion of women in the study are APOE4 carriers? ^^
+
+
+The `baseline_demos` dataset was imported and tidyied up by renaming column names when necessary, mutating the `sex` variable values into female or male, and similarly the `apoe4_carrier` into carrier or non-carrier. Additionally, NA's were needed to `onset_age` variable, and we filtered for participants without MCI at baseline. 
+The resulting dataset contains a total of `r nrow(baseline_demos)` observations and `r ncol(baseline_demos)` variables. There was a total of 483 participants recruited and of those `r nrow(baseline_demos)` developed MCI. The average baseline age was `r baseline_demos %>% mean(baseline_age)`. The proportion of women in the study that were APOE4 carriers were `r baseline_demos %>% filter(sex == 'female' & apoe4_carrier == "carrier") %>% sum(id)` / `r nrow(baseline_demos)`.  
 
 
 
@@ -247,22 +249,27 @@ amyloid_dataset <- read_csv("data_hw2/data_mci/mci_amyloid.csv", skip = 1) %>%
                values_to = 'biomarkers_ratio')
 ```
 
-Similarly, import, clean, and tidy the dataset of longitudinally observed biomarker values; comment on the steps on the import process and the features of the dataset. ^
 
-
+The `amyloid_dataset` dataset was imported and tidyied up by renaming column names when necessary, and transforming the dataset from 'wide' format to 'long' format. 
+The resulting dataset contains a total of `r nrow(amyloid_dataset)` observations and `r ncol(amyloid_dataset)` variables.
 
 
 ```{r}
-#are in baseline
+#observations in the baseline_demos dataset, but not in amyloid_dataset
 anti_join(baseline_demos, amyloid_dataset, by = 'id')
 ```
 
+Of the participants that were in the `baseline_demos` dataset, most were non-carriers of APOE4, and most of their onset age is missing. 
+
+
+
 ```{r}
-#aren't in baseline
+#observations in amyloid_dataset, but not in baseline_demos dataset
 anti_join(amyloid_dataset, baseline_demos, by = 'id')
 ```
 
-Check whether some participants appear in only the baseline or amyloid datasets, and comment on your findings. ^^ (both)
+Based on these findings, we can see that the participants that were not in the `baseline_demos`has simialr biomarker ratios.
+
 
 
 
@@ -275,4 +282,5 @@ common_amyloid_dataset <- inner_join(baseline_demos, amyloid_dataset, by = "id")
 write_csv(common_amyloid_dataset,"data_hw2/common_amyloid_dataset.csv")
 ```
 
-briefly describe the resulting dataset^
+After combining both datasets, the `common_amyloid_dataset` is produced. This dataset contains at total of `r nrow(common_amyloid_dataset)` observations and `r ncol(common_amyloid_dataset)` variables. This dataset contains information of participants' biomarkers ratio obtained at different times/stages in the study, and shows whether the participant is a APOE4 carrier or not, the participants' sex, ages at baseline and onset, and their years of education. 
+\
