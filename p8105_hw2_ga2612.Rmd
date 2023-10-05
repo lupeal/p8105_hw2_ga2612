@@ -61,6 +61,8 @@ snp <- read_csv("data_hw2/fivethirtyeight_datasets/snp.csv") %>%
   #breaking up date variable into integer variables: year, month, day
   separate(date, into = c("year", "month", "day"), convert = TRUE) %>%
   mutate(
+    #fixing the year problem
+    year = ifelse(year > 2023, year - 100, year),
     #replacing month num with month name
     month = case_match(
       month,
@@ -79,7 +81,7 @@ snp <- read_csv("data_hw2/fivethirtyeight_datasets/snp.csv") %>%
   #removing day variable
   select(-day)
 ```
-
+ 
 
 ```{r, message=FALSE}
 #loading unemployment.csv data
@@ -112,12 +114,15 @@ unemployment <- read_csv("data_hw2/fivethirtyeight_datasets/unemployment.csv") %
 
 ```{r}
 #merging snp into pols
-final_data <- left_join(pols_month, snp, by = c("year", "month"))
+final_data <- left_join(pols_month, snp)
 
-final_data <- left_join(final_data, unemployment, by = c("year", "month"))
+final_data <- left_join(final_data, unemployment)
 ```
 
-Write a short paragraph about these datasets. Explain briefly what each dataset contained, and describe the resulting dataset (e.g. give the dimension, range of years, and names of key variables).
+
+The `pols_month` data has a total of `r nrow(pols_month)` observations and `r ncol(pols_month)` variables. This dataset contains information regarding the party affiliations of governors and senators, and the current president (at that time) between `r pols_month %>% pull(year) %>% min()` to `r pols_month %>% pull(year) %>% max()`.
+The `snp` data has a total of `r nrow(snp)` observations and `r ncol(snp)` variables. It contains information from the years `r snp %>% pull(year) %>% min()` to `r snp %>% pull(year) %>% max()`. 
+Additionally, the `unemployment` dataset has a total of `r nrow(unemployment)` observations and `r ncol(unemployment)` variables. It contains information from the years `r unemployment %>% pull(year) %>% min()` to `r unemployment %>% pull(year) %>% max()`. 
 
 
 
@@ -125,12 +130,6 @@ Write a short paragraph about these datasets. Explain briefly what each dataset 
 
 
 ## Problem 2
-
-
-Use a similar process to import, clean, and organize the data for Professor Trash Wheel and Gwynnda, and combine these with the Mr. Trash Wheel dataset to produce a single tidy dataset. To keep track of which Trash Wheel is which, you may need to add an additional variable to all datasets before combining.
-
-Write a paragraph about these data; you are encouraged to use inline R. Be sure to note the number of observations in the resulting dataset, and give examples of key variables. For available data, what was the total weight of trash collected by Professor Trash Wheel? What was the total number of cigarette butts collected by Gwynnda in July of 2021?
-
 
 ```{r, message=FALSE}
 #loading Mr. Trash Wheel data
@@ -192,12 +191,6 @@ Write a paragraph about these data; you are encouraged to use inline R. Be sure 
 
 ## Problem 3
 
-Import, clean, and tidy the dataset of baseline demographics. Ensure that sex and APOE4 carrier status are appropriate encoded (i.e. not numeric), and remove any participants who do not meet the stated inclusion criteria (i.e. no MCI at baseline). Discuss important steps in the import process and relevant features of the dataset. How many participants were recruited, and of these how many develop MCI? What is the average baseline age? What proportion of women in the study are APOE4 carriers?
-
-Similarly, import, clean, and tidy the dataset of longitudinally observed biomarker values; comment on the steps on the import process and the features of the dataset.
-
-Check whether some participants appear in only the baseline or amyloid datasets, and comment on your findings. Combine the demographic and biomarker datasets so that only participants who appear in both datasets are retained, and briefly describe the resulting dataset; export the result as a CSV to your data directory.
-
 
 ```{r, message=FALSE}
 #loading the baseline dataset
@@ -206,12 +199,10 @@ baseline_demos <- read_csv("data_hw2/data_mci/MCI_baseline.csv", skip = 1) %>%
   janitor::clean_names() %>%
   #renaming the column names
   rename(
-    'id' = 'x1',
-    'baseline_age' = 'age_at_the_study_baseline',
-    'sex' = 'x1_male_0_female',
-    'education_years' = 'years_of_education',
-    'apoe4_carrier' = 'x1_apoe4_carrier_0_apoe4_non_carrier',
-    'onset_age' = 'age_at_the_onset_of_mci_missing_if_a_subject_remains_mci_free_during_the_follow_up_period')
+    'baseline_age' = 'current_age',
+    'education_years' = 'education',
+    'apoe4_carrier' = 'apoe4',
+    'onset_age' = 'age_at_onset')
 ```
 
 
@@ -235,6 +226,9 @@ baseline_demos <- baseline_demos %>%
   #filtering no MCI
   filter(onset_age > baseline_age | is.na(onset_age))
 ```
+Discuss important steps in the import process and relevant features of the dataset. How many participants were recruited, and of these how many develop MCI? What is the average baseline age? What proportion of women in the study are APOE4 carriers? ^^
+
+
 
 
 
@@ -243,7 +237,40 @@ baseline_demos <- baseline_demos %>%
 amyloid_dataset <- read_csv("data_hw2/data_mci/mci_amyloid.csv", skip = 1) %>%
   #cleaning dataset
   janitor::clean_names() %>%
-  
+  #renaming colname
+  rename('id' = 'study_id') %>%
+  #transforming dataset
+  pivot_longer(baseline:time_8,
+               names_to = 'time_elapsed',
+               values_to = 'biomarkers_ratio')
 ```
 
+Similarly, import, clean, and tidy the dataset of longitudinally observed biomarker values; comment on the steps on the import process and the features of the dataset. ^
 
+
+
+
+```{r}
+#are in baseline
+anti_join(baseline_demos, amyloid_dataset, by = 'id')
+```
+
+```{r}
+#aren't in baseline
+anti_join(amyloid_dataset, baseline_demos, by = 'id')
+```
+
+Check whether some participants appear in only the baseline or amyloid datasets, and comment on your findings. ^^ (both)
+
+
+
+
+```{r}
+#dataset with common observations
+common_amyloid_dataset <- inner_join(baseline_demos, amyloid_dataset, by = "id")
+
+#export csv
+write_csv(common_amyloid_dataset,"data_hw2/common_amyloid_dataset.csv")
+```
+
+briefly describe the resulting dataset^
